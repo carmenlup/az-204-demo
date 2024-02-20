@@ -19,7 +19,7 @@ namespace Demo.Api.Controllers
             _context = context;
             _processFileService = processFileService;
         }
-
+        // GET: api/Albums
         [HttpPost]
         public async Task<ActionResult<Album>> PostAlbum([FromForm] Album album)
         {
@@ -33,7 +33,7 @@ namespace Demo.Api.Controllers
             return StatusCode(StatusCodes.Status201Created);
         }
 
-        // GET: api/Artists
+        // GET: api/Albums
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AlbumModel>>> GetArtist()
         {

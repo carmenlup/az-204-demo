@@ -21,7 +21,25 @@ namespace Demo.Api.Controllers
             _processFileService = processFileService;
         }
 
-        // GET: api/<SongsController>
+        // POST api/Songs
+        [HttpPost]
+        public async Task<ActionResult<Song>> Post([FromForm] Song song)
+        {
+            var imageUrl = await _processFileService.UploadFile(song.Image);
+            song.ImageUrl = imageUrl;
+            if (song.AudioFile != null)
+            {
+                var audioFileUrl = await _processFileService.UploadFile(song.AudioFile);
+                song.AudioUrl = audioFileUrl;
+            }
+            song.UploadTime = DateTime.Now;
+
+            await _context.Songs.AddAsync(song);
+            await _context.SaveChangesAsync();
+            return StatusCode(StatusCodes.Status201Created);
+        }
+
+        // GET: api/Songs
         [HttpGet]
         public async Task<ActionResult<SongModel>> Get()
         {
@@ -43,7 +61,7 @@ namespace Demo.Api.Controllers
 
         }
 
-        // GET api/<SongsController>/5
+        // GET api/Songs/5
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
@@ -55,25 +73,63 @@ namespace Demo.Api.Controllers
             return Ok(song);
         }
 
-        // POST api/<SongsController>
-        [HttpPost]
-        public async Task<ActionResult<Song>> Post([FromForm] Song song)
-        {
-            var imageUrl = await _processFileService.UploadFile(song.Image);
-            song.ImageUrl = imageUrl;
-            if (song.AudioFile != null)
-            {
-                var audioFileUrl = await _processFileService.UploadFile(song.AudioFile);
-                song.AudioUrl = audioFileUrl;
-            }
-            song.UploadTime = DateTime.Now;
+        
 
-            await _context.Songs.AddAsync(song);
-            await _context.SaveChangesAsync();
-            return StatusCode(StatusCodes.Status201Created);
+        // GET: api/Songs/FeaturedSongs/?isFeatured=true
+        [HttpGet("[action]")]
+        public async Task<ActionResult<SongModel>> FeaturedSongs(bool isFeatured)
+        {
+            var songs = await _context.Songs.Where(s=> s.IsFeatured == isFeatured).Select(s =>
+            new SongModel
+            {
+                Id = s.Id,
+                Title = s.Title,
+                Duration = s.Duration,
+                ImageUrl = s.ImageUrl,
+                AudioUrl = s.AudioUrl
+            }).ToListAsync();
+
+            return Ok(songs);
         }
 
-        // PUT api/<SongsController>/5
+        // GET: api/Songs/NewSongs
+        [HttpGet("[action]")]
+        public async Task<ActionResult<SongModel>> NewSongs()
+        {
+            var songs = await _context.Songs.Select(s =>
+            new SongModel
+            {
+                Id = s.Id,
+                Title = s.Title,
+                Duration = s.Duration,
+                ImageUrl = s.ImageUrl,
+                AudioUrl = s.AudioUrl,
+                Date = s.UploadTime
+            }).OrderByDescending(s=> s.Date).ToListAsync();
+
+            return Ok(songs);
+        }
+
+        // GET: api/Songs/SearchSongs/?query=a
+        [HttpGet("[action]")]
+        public async Task<ActionResult<SongModel>> SearchSongs(string query)
+        {
+            var songs = await _context.Songs.Where(s => s.Title.ToUpper().StartsWith(query.ToUpper())).Select(s =>
+            new SongModel
+            {
+                Id = s.Id,
+                Title = s.Title,
+                Duration = s.Duration,
+                ImageUrl = s.ImageUrl,
+                AudioUrl = s.AudioUrl,
+                Date = s.UploadTime
+            }).ToListAsync();
+
+            return Ok(songs);
+        }
+
+        // PUT api/Songs/5
+        // Not used in FE in phase one
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] Song songRequest)
         {
@@ -84,13 +140,15 @@ namespace Demo.Api.Controllers
             
             song.AlbumId = songRequest.AlbumId;
             song.Title = songRequest.Title;
+            song.IsFeatured = songRequest.IsFeatured;
             await _context.SaveChangesAsync();
             
             
             return Ok("record updated succesfully");
         }
 
-        // DELETE api/<SongsController>/5
+        // DELETE api/Songs/5
+        // Not used in FE in phase one
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

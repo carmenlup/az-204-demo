@@ -7,6 +7,7 @@ namespace Demo.Api.Models
         public int Id { get; set; }
         public required string Title { get; set; }
         public required string Duration { get; set; }
+        public DateTime? Date { get; set; }
         public string? ImageUrl { get; set; }
         public string? AudioUrl { get; set; }
 
