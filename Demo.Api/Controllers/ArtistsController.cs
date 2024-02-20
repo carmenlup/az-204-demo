@@ -93,6 +93,7 @@ namespace Demo.Api.Controllers
 
         // POST: api/Artists
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // Not used in FE in phase one
         [HttpPost]
         public async Task<ActionResult<Artist>> PostArtist([FromForm] Artist artist)
         {
@@ -112,6 +113,7 @@ namespace Demo.Api.Controllers
 
 
         // DELETE: api/Artists/5
+        // Not used in FE in phase one
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteArtist(int id)
         {
