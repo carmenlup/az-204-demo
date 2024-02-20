@@ -1,5 +1,7 @@
 ﻿using Demo.Api.Data;
 using Demo.Api.Data.Entities;
+using Demo.Api.Models;
+using Demo.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,18 +13,30 @@ namespace Demo.Api.Controllers
     [ApiController]
     public class SongsController : ControllerBase
     {
-        private AppDbContext _appDbContext;
-        public SongsController(AppDbContext appDbContext)
+        private AppDbContext _context;
+        private IFileService _processFileService;
+        public SongsController(AppDbContext context, IFileService processFileService)
         {
-            _appDbContext = appDbContext;
+            _context = context;
+            _processFileService = processFileService;
         }
 
         // GET: api/<SongsController>
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<ActionResult<SongModel>> Get()
         {
-            //return _appDbContext.Songs;
-            return  Ok(await _appDbContext.Songs.ToListAsync());
+            var songs = await _context.Songs.Select(s =>
+            new SongModel
+            {
+                Id = s.Id,
+                Title = s.Title,
+                Duration = s.Duration,
+                ImageUrl = s.ImageUrl,
+                AudioUrl = s.AudioUrl
+            }).ToListAsync();
+
+            return Ok(songs);
+            // return  Ok(await _appDbContext.Songs.ToListAsync());
             // return BadRequest(); // 400 
             // return NotFound();   // 404
             //return StatusCode(StatusCodes.Status200OK);
@@ -33,7 +47,7 @@ namespace Demo.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            var song = await _appDbContext.Songs.FindAsync(id);
+            var song = await _context.Songs.FindAsync(id);
 
             if (song == null)
                 return NotFound($"No record found with the id {id}");
@@ -43,10 +57,19 @@ namespace Demo.Api.Controllers
 
         // POST api/<SongsController>
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] Song song)
+        public async Task<ActionResult<Song>> Post([FromForm] Song song)
         {
-            await _appDbContext.Songs.AddAsync(song);
-            await _appDbContext.SaveChangesAsync();
+            var imageUrl = await _processFileService.UploadFile(song.Image);
+            song.ImageUrl = imageUrl;
+            if (song.AudioFile != null)
+            {
+                var audioFileUrl = await _processFileService.UploadFile(song.AudioFile);
+                song.AudioUrl = audioFileUrl;
+            }
+            song.UploadTime = DateTime.Now;
+
+            await _context.Songs.AddAsync(song);
+            await _context.SaveChangesAsync();
             return StatusCode(StatusCodes.Status201Created);
         }
 
@@ -54,13 +77,14 @@ namespace Demo.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] Song songRequest)
         {
-            var song = await _appDbContext.Songs.FindAsync(id);
+            var song = await _context.Songs.FindAsync(id);
 
             if (song == null)
                 return NotFound($"No record found with the id {id}");
             
+            song.AlbumId = songRequest.AlbumId;
             song.Title = songRequest.Title;
-            await _appDbContext.SaveChangesAsync();
+            await _context.SaveChangesAsync();
             
             
             return Ok("record updated succesfully");
@@ -70,12 +94,12 @@ namespace Demo.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var song = await _appDbContext.Songs.FindAsync(id);
+            var song = await _context.Songs.FindAsync(id);
             if (song == null)
                 return NotFound($"No record found with the id {id}");
 
-            _appDbContext.Remove(song);
-            await _appDbContext.SaveChangesAsync();
+            _context.Remove(song);
+            await _context.SaveChangesAsync();
             return Ok("record deleted");
         }
     }

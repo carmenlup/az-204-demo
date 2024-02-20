@@ -45,7 +45,10 @@ namespace Demo.Api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Artist>> GetArtist(int id)
         {
-            var artists = await _context.Artists.Where(a => a.Id == id).Include(s => s.Songs).ToListAsync();
+            var artists = await _context.Artists
+                .Where(a => a.Id == id)
+                .Include(s => s.Songs)
+                .ToListAsync();
 
             if (artists == null)
             {

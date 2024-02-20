@@ -13,13 +13,13 @@ namespace Demo.Api.Data.Entities
 
         [NotMapped]
         public IFormFile? Image { get; set; }       
-        public required string ImageUrl { get; set; }
+        public string? ImageUrl { get; set; }
 
         [NotMapped]
         public IFormFile? AudioFile { get; set; }
-        public required string AudioUrl { get; set; }
+        public string? AudioUrl { get; set; }
         public int ArtistId { get; set; }
-        public Artist Artist { get; set; } = null!;
+        public Artist? Artist { get; set; } = null!;
         public int? AlbumId { get; set; }
         public Album? Album { get; set; }
     }
