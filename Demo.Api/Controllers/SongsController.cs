@@ -4,6 +4,7 @@ using Demo.Api.Models;
 using Demo.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -25,7 +26,9 @@ namespace Demo.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<Song>> Post([FromForm] Song song)
         {
+#pragma warning disable CS8604 // Possible null reference argument.
             var imageUrl = await _processFileService.UploadFile(song.Image);
+#pragma warning restore CS8604 // Possible null reference argument.
             song.ImageUrl = imageUrl;
             if (song.AudioFile != null)
             {
@@ -41,7 +44,7 @@ namespace Demo.Api.Controllers
 
         // GET: api/Songs
         [HttpGet]
-        public async Task<ActionResult<SongModel>> Get()
+        public async Task<ActionResult<SongModel>> Get(int? pageNumber = 1, int? pageSize = 5)
         {
             var songs = await _context.Songs.Select(s =>
             new SongModel
@@ -53,7 +56,7 @@ namespace Demo.Api.Controllers
                 AudioUrl = s.AudioUrl
             }).ToListAsync();
 
-            return Ok(songs);
+            return Ok(songs.Skip((int)((pageNumber - 1) * pageSize)).Take((int)pageSize));
             // return  Ok(await _appDbContext.Songs.ToListAsync());
             // return BadRequest(); // 400 
             // return NotFound();   // 404
