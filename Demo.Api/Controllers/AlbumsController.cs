@@ -19,7 +19,7 @@ namespace Demo.Api.Controllers
             _context = context;
             _processFileService = processFileService;
         }
-
+        // GET: api/Albums
         [HttpPost]
         public async Task<ActionResult<Album>> PostAlbum([FromForm] Album album)
         {
@@ -33,9 +33,9 @@ namespace Demo.Api.Controllers
             return StatusCode(StatusCodes.Status201Created);
         }
 
-        // GET: api/Artists
+        // GET: api/Albums
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AlbumModel>>> GetArtist()
+        public async Task<ActionResult<IEnumerable<AlbumModel>>> GetArtist(int? pageNumber = 1, int? pageSize = 5)
         {
 
             var album = await _context.Albums.Select(a =>
@@ -46,7 +46,7 @@ namespace Demo.Api.Controllers
                 ImageUrl = a.ImageUrl
             }).ToListAsync();
 
-            return Ok(album);
+            return Ok(album.Skip((int)((pageNumber - 1) * pageSize)).Take((int)pageSize));
         }
 
         // GET: api/Albums/5

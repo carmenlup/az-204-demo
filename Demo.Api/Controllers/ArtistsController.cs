@@ -10,6 +10,7 @@ using Demo.Api.Models;
 using Azure.Storage.Blobs;
 using Demo.Api.Services;
 using Demo.Api.Data.Entities;
+using System.Drawing.Printing;
 
 namespace Demo.Api.Controllers
 {
@@ -27,7 +28,7 @@ namespace Demo.Api.Controllers
 
         // GET: api/Artists
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ArtistModel>>> GetArtist()
+        public async Task<ActionResult<IEnumerable<ArtistModel>>> GetArtist(int? pageNumber = 1, int? pageSize = 5)
         {
 
             var artists = await _context.Artists.Select( a => 
@@ -38,7 +39,7 @@ namespace Demo.Api.Controllers
                 ImageUrl = a.ImageUrl
             }).ToListAsync();
             
-            return Ok(artists);
+            return Ok(artists.Skip((int)((pageNumber - 1) * pageSize)).Take((int)pageSize));
         }
 
         // GET: api/Artists/5
@@ -93,6 +94,7 @@ namespace Demo.Api.Controllers
 
         // POST: api/Artists
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // Not used in FE in phase one
         [HttpPost]
         public async Task<ActionResult<Artist>> PostArtist([FromForm] Artist artist)
         {
@@ -112,6 +114,7 @@ namespace Demo.Api.Controllers
 
 
         // DELETE: api/Artists/5
+        // Not used in FE in phase one
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteArtist(int id)
         {
