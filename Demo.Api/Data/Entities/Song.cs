@@ -19,8 +19,7 @@ namespace Demo.Api.Data.Entities
         public IFormFile? AudioFile { get; set; }
         public string? AudioUrl { get; set; }
         public int ArtistId { get; set; }
-        public Artist? Artist { get; set; } = null!;
         public int? AlbumId { get; set; }
-        public Album? Album { get; set; }
+       
     }
 }
