@@ -1,0 +1,15 @@
+.loader {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 2rem;
+  font-weight: 500;
+  margin: 2.8rem;
+}
+
+.message {
+  text-align: center;
+  text-transform: uppercase;
+  margin: 2.8rem;
+  color: red;
+  font-weight: 500;
+}

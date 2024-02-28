@@ -2,21 +2,12 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import "@coreui/coreui/dist/css/coreui.min.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import {
-  CCard,
-  CCardImage,
-  CCardBody,
-  CCardTitle,
-  CCardText,
-  CButton,
-  CContainer,
-  CRow,
-  CCol,
-} from "@coreui/react";
-import { CAvatar } from "@coreui/react";
+import Song from "./Song";
+import Artist from "./Artist";
 
 function App() {
   const [artists, setArtists] = useState([]);
+  const [songs, setSongs] = useState([]);
 
   useEffect(function () {
     async function fetchArtists() {
@@ -26,33 +17,30 @@ function App() {
 
       const getArtistsData = await artistsResponse.json();
       setArtists(getArtistsData);
-      console.log(getArtistsData);
+      //console.log(getArtistsData);
     }
 
     fetchArtists();
   }, []);
 
+  useEffect(function () {
+    async function fetchSongs() {
+      const songsResponse = await fetch(`/api/Songs`);
+
+      if (!songsResponse) throw new Error("Fetching songs failed");
+
+      const songsData = await songsResponse.json();
+      setSongs(songsData);
+      //console.log(songsData);
+    }
+
+    fetchSongs();
+  }, []);
+
   return (
     <div>
-      <h1>Artists</h1>
-      <CContainer>
-        <CRow>
-          {artists?.map((artist) => (
-            <CCol md={4} key={artist.id}>
-              <CCard style={{ marginBottom: "1.5rem" }}>
-                <CCardBody>
-                  <CAvatar src={artist.imageUrl} />
-                  <CCardTitle>
-                    Artist <b>{artist.name}</b>
-                  </CCardTitle>
-                  <CCardText>short description</CCardText>
-                  <CButton href="#">Details</CButton>
-                </CCardBody>
-              </CCard>
-            </CCol>
-          ))}
-        </CRow>
-      </CContainer>
+      <Artist artists={artists} />
+      <Song songs={songs} />
     </div>
   );
 }
