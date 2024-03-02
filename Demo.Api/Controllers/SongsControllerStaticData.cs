@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace Demo.Api.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)]
     [Route("api/[controller]")]
     [ApiController]
     public class SongsControllerStaticData : ControllerBase
