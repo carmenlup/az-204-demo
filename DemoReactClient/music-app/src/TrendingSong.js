@@ -1,21 +1,12 @@
-import {
-  CCard,
-  CCardImage,
-  CCardBody,
-  CCardTitle,
-  CCardText,
-  CContainer,
-  CRow,
-  CCol,
-} from "@coreui/react";
+import { CContainer, CRow, CCol, CCardImage, CCardTitle } from "@coreui/react";
 
-export default function Song({ songs }) {
+export default function TrendingSongs({ trendingSongs }) {
   return (
     <>
       <CContainer>
-        <h1>New Songs</h1>
+        <h1>Trending</h1>
         <CRow>
-          {songs?.map((song) => (
+          {trendingSongs?.map((song) => (
             <CCol md={2} key={song.id}>
               <CCardImage src={song.imageUrl} />
               <CCardTitle>
