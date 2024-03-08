@@ -20,23 +20,15 @@ export default function Artist({ artists }) {
   }
   return (
     <>
-      <h1>Artists</h1>
       <CContainer>
+        <h1>Artists</h1>
         <CRow>
           {artists?.map((artist) => (
-            <CCol key={artist.id}>
-              <CCard style={{ marginBottom: "1.5rem" }}>
-                <CCardBody>
-                  <CAvatar src={artist.imageUrl} />
-                  <CCardTitle>
-                    Artist <b>{artist.name}</b>
-                  </CCardTitle>
-                  <CCardText>short description</CCardText>
-                  <CButton onClick={() => handleSelectArtist(artist.id)}>
-                    More
-                  </CButton>
-                </CCardBody>
-              </CCard>
+            <CCol key={artist.id} onClick={() => handleSelectArtist(artist.id)}>
+              <CAvatar src={artist.imageUrl} size="xl" />
+              <CCardTitle style={{ margin: "1rem" }}>
+                <b>{artist.name}</b>
+              </CCardTitle>
             </CCol>
           ))}
         </CRow>
